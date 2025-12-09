@@ -231,10 +231,13 @@ export default function WorkerPage() {
                       ...base,
                       fontSize: "18px",
                       padding: "16px",
-                      color: "#000",
-                      backgroundColor: state.isSelected ? "linear-gradient(to right, #06b6d4, #0284c7)" : state.isFocused ? "#f0f9fc" : "#fff",
-                      color: state.isSelected ? "#fff" : "#000",
                       cursor: "pointer",
+                      background: state.isSelected
+                        ? "linear-gradient(to right, #06b6d4, #0284c7)"
+                        : state.isFocused
+                        ? "#f0f9fc"
+                        : "#fff",
+                      color: state.isSelected ? "#fff" : "#000",
                     }),
                     menuList: (base) => ({
                       ...base,
