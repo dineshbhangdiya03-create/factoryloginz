@@ -163,26 +163,23 @@ export default function WorkerPage() {
   const options = workers.map((w) => ({ value: w.workerId, label: w.name }));
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-cyan-50 to-white px-4 py-8 overflow-hidden">
-      {/* Animated gradient orbs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob animation-delay-2000"></div>
+    <div className="relative min-h-screen flex items-center justify-center bg-white px-4 py-6 overflow-hidden">
 
       <div className="relative z-10 w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-12 lg:mb-16">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-3xl mb-8 shadow-xl transform hover:scale-110 transition-transform">
-            <span className="text-5xl">⏱️</span>
+        {/* Header (smaller) */}
+        <div className="text-center mb-8 lg:mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/0 rounded-3xl mb-6 shadow-none">
+            {/* removed clock icon and heavy gradient */}
           </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-gray-900 mb-4 tracking-tight">Factory Attendance</h1>
-          <p className="text-lg sm:text-xl text-gray-600 font-medium">Check in and out with precision</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-3 tracking-tight">ATTENDANCE</h1>
+          <p className="text-base sm:text-lg text-gray-600 font-medium">Factory ke Gate Pe Aake Login Karna hai</p>
         </div>
 
-        {/* Main Card */}
-        <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-14 mb-8 border border-white/20">
+        {/* Main Card (reduced padding and slightly more transparent) */}
+        <div className="bg-white/85 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 mb-6 border border-white/20">
           {/* Worker Selection */}
-          <div className="mb-12">
-            <label className="block text-2xl sm:text-3xl font-black text-gray-900 mb-6">👤 Select your name</label>
+          <div className="mb-8">
+            <label className="block text-xl sm:text-2xl font-black text-gray-900 mb-4">👤 Select your name</label>
             {loadingWorkers ? (
               <div className="h-16 sm:h-20 flex items-center justify-center text-lg text-gray-500">
                 <span className="animate-pulse">Loading names…</span>
@@ -203,46 +200,47 @@ export default function WorkerPage() {
                   styles={{
                     control: (base) => ({
                       ...base,
-                      minHeight: "60px",
-                      borderRadius: "20px",
+                      minHeight: "56px",
+                      borderRadius: "16px",
                       borderColor: "#e5e7eb",
-                      fontSize: "18px",
+                      fontSize: "16px",
                       padding: "2px",
                       color: "#000",
                       backgroundColor: "#f9fafb",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-                      border: "2px solid #e5e7eb",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.04)",
+                      border: "1px solid #e5e7eb",
                     }),
                     input: (base) => ({
                       ...base,
                       color: "#000",
+                      fontSize: "16px",
                     }),
                     placeholder: (base) => ({
                       ...base,
-                      color: "#999",
-                      fontSize: "18px",
+                      color: "#888",
+                      fontSize: "16px",
                     }),
                     singleValue: (base) => ({
                       ...base,
                       color: "#000",
-                      fontSize: "18px",
+                      fontSize: "16px",
                     }),
                     option: (base, state) => ({
                       ...base,
-                      fontSize: "18px",
-                      padding: "16px",
+                      fontSize: "16px",
+                      padding: "12px",
                       cursor: "pointer",
                       background: state.isSelected
                         ? "linear-gradient(to right, #06b6d4, #0284c7)"
                         : state.isFocused
-                        ? "#f0f9fc"
+                        ? "#f7fbfd"
                         : "#fff",
                       color: state.isSelected ? "#fff" : "#000",
                     }),
                     menuList: (base) => ({
                       ...base,
                       backgroundColor: "#fff",
-                      borderRadius: "16px",
+                      borderRadius: "12px",
                     }),
                   }}
                 />
@@ -251,7 +249,7 @@ export default function WorkerPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             <button
               disabled={busy}
               onClick={() => handlePunch("LOGIN")}
@@ -271,27 +269,27 @@ export default function WorkerPage() {
 
           {/* Messages */}
           {message && (
-            <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-300 shadow-md">
-              <p className="text-emerald-900 text-lg sm:text-xl font-semibold">✓ {message}</p>
+            <div className="mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-sm">
+              <p className="text-emerald-900 text-base sm:text-lg font-semibold">✓ {message}</p>
             </div>
           )}
           {error && (
-            <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-300 shadow-md animate-pulse">
-              <p className="text-red-900 text-lg sm:text-xl font-semibold">⚠️ {error}</p>
+            <div className="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 shadow-sm animate-pulse">
+              <p className="text-red-900 text-base sm:text-lg font-semibold">⚠️ {error}</p>
             </div>
           )}
 
           {/* Tip */}
-          <div className="text-sm sm:text-base text-gray-700 bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-2xl border border-cyan-200">
+          <div className="text-sm sm:text-base text-gray-700 bg-cyan-50 p-4 rounded-2xl border border-cyan-100">
             <p className="font-semibold">💡 Tip:</p>
-            <p>On desktops geolocation can be slow — use mobile for best results.</p>
+            <p>Mobile use .</p>
           </div>
         </div>
 
         {/* Worker ID Display */}
         {selected && (
-          <div className="text-center p-6 rounded-2xl bg-white/90 backdrop-blur-lg border border-white/20 shadow-lg">
-            <p className="text-gray-700 text-lg">Logged in as: <span className="font-black text-gray-900 text-2xl bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">{selected.name}</span></p>
+          <div className="text-center p-5 rounded-2xl bg-white/85 backdrop-blur-lg border border-white/20 shadow-md">
+            <p className="text-gray-700 text-base">Logged in as: <span className="font-black text-gray-900 text-xl">{selected.name}</span></p>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 // lib/googleSheets.ts
 import { google } from "googleapis";
+import { distanceInMeters } from "./geo";
 
 /**
  * ENV DEBUG (temporary – safe in local)
@@ -102,17 +103,19 @@ export async function appendUnauthRow(
   accuracyM: number,
   distanceM: number,
   reason: string,
-  userAgent: string
+  userAgent: string,
+  locationName?: string,
+  type?: string
 ) {
   const auth = getAuthClient();
 
   await sheets.spreadsheets.values.append({
     auth,
     spreadsheetId: process.env.ATTENDANCE_SHEET_ID!,
-    range: "UNAUTH!A:I",
+    range: "UNAUTH!A:K",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [[timestamp, workerId, name, lat, lng, accuracyM, distanceM, reason, userAgent]],
+      values: [[timestamp, workerId, name, lat, lng, accuracyM, distanceM, reason, userAgent, locationName || "", type || "UNAUTH"]],
     },
   });
 }
@@ -146,6 +149,84 @@ export async function getWorkers(): Promise<Worker[]> {
     .filter((w) => w.active);
 }
 
+// ================= LOCATIONS =================
+export interface LocationPoint {
+  name: string;
+  lat: number;
+  lng: number;
+  radiusM: number;
+}
+
+export async function getLocations(): Promise<LocationPoint[]> {
+  const auth = getAuthClient();
+
+  const res = await sheets.spreadsheets.values.get({
+    auth,
+    spreadsheetId: process.env.ATTENDANCE_SHEET_ID!,
+    range: "LOCATION!A2:D",
+  });
+
+  const rows = res.data.values || [];
+  return rows
+    .filter((r) => r[0] && r[1] && r[2])
+    .map((r) => ({
+      name: String(r[0]),
+      lat: parseFloat(r[1]),
+      lng: parseFloat(r[2]),
+      radiusM: parseFloat(r[3] || "80"),
+    }));
+}
+
+export async function findNearestLocation(lat: number, lng: number) {
+  const locations = await getLocations();
+  if (!locations.length) return { name: "", distance: Infinity, within: false, radiusM: 0 };
+
+  let best = locations[0];
+  let bestDist = distanceInMeters(lat, lng, best.lat, best.lng);
+
+  for (let i = 1; i < locations.length; i++) {
+    const loc = locations[i];
+    const d = distanceInMeters(lat, lng, loc.lat, loc.lng);
+    if (d < bestDist) {
+      best = loc;
+      bestDist = d;
+    }
+  }
+
+  return {
+    name: best.name,
+    distance: Math.round(bestDist),
+    within: Math.round(bestDist) <= (best.radiusM || 80),
+    radiusM: best.radiusM || 80,
+  };
+}
+
+// ================= EMPLOYEES =================
+export interface Emp {
+  empId: string;
+  name: string;
+  password: string;
+}
+
+export async function getEmps(): Promise<Emp[]> {
+  const auth = getAuthClient();
+
+  const res = await sheets.spreadsheets.values.get({
+    auth,
+    spreadsheetId: process.env.ATTENDANCE_SHEET_ID!,
+    range: "EMP!A2:F",
+  });
+
+  const rows = res.data.values || [];
+  return rows
+    .filter((r) => r[1])
+    .map((r, idx) => ({
+      empId: String(r[0] || `EMP_${idx + 2}`),
+      name: String(r[1]), // column B
+      password: String(r[5] || ""), // column F
+    }));
+}
+
 // ================= LOG INSERT =================
 
 export async function appendLogRow(
@@ -157,29 +238,31 @@ export async function appendLogRow(
   lng: number,
   accuracyM: number,
   withinGeofence: boolean,
-  userAgent: string
+  userAgent: string,
+  locationName?: string,
+  type?: string
 ) {
   const auth = getAuthClient();
 
   await sheets.spreadsheets.values.append({
     auth,
     spreadsheetId: process.env.ATTENDANCE_SHEET_ID!,
-    range: "LOGS!A:I",
+    range: "LOGS!A:K",
     valueInputOption: "USER_ENTERED",
     requestBody: {
-      values: [
-        [
-          timestamp,
-          workerId,
-          name,
-          action,
-          lat,
-          lng,
-          accuracyM,
-          withinGeofence,
-          userAgent,
-        ],
-      ],
+      values: [[
+        timestamp,
+        workerId,
+        name,
+        action,
+        lat,
+        lng,
+        accuracyM,
+        withinGeofence,
+        userAgent,
+        locationName || "",
+        type || "WORKER",
+      ]],
     },
   });
 }

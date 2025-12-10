@@ -25,7 +25,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Comfortaa will override this from layout.tsx */
 }
 
 /* Luxury styling utilities */
@@ -64,4 +64,26 @@ body {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* Heading styles: Comfortaa, bold and red as requested */
+h1 {
+  font-family: var(--font-comfortaa), 'Comfortaa', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-weight: 700;
+  color: #ff0000;
+  line-height: 1.05;
+}
+
+/* Ensure the animated background canvas sits behind content and doesn't capture pointer events */
+.animated-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.animated-bg {
+  z-index: -20;
 }

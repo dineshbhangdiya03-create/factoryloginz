@@ -20,13 +20,14 @@ export default function AnimatedBackground() {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0xfafaf8, 1);
+    // keep renderer background transparent so page background and semi-transparent cards show through
+    renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
 
     camera.position.z = 50;
 
     // Create particles/dots
-    const particleCount = 100;
+    const particleCount = 60;
     const particles = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
 
@@ -40,8 +41,10 @@ export default function AnimatedBackground() {
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0x06b6d4,
-      size: 2,
+      size: 1.5,
       sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.9,
     });
 
     const particleSystem = new THREE.Points(particles, particleMaterial);
@@ -84,7 +87,7 @@ export default function AnimatedBackground() {
       color: 0x06b6d4,
       linewidth: 1,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.75,
     });
 
     const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
@@ -95,13 +98,13 @@ export default function AnimatedBackground() {
     const animate = () => {
       animationId = requestAnimationFrame(animate);
 
-      // Rotate particles
-      particleSystem.rotation.x += 0.0001;
-      particleSystem.rotation.y += 0.0002;
+      // Gentle rotation to create subtle motion
+      particleSystem.rotation.x += 0.00005;
+      particleSystem.rotation.y += 0.0001;
 
-      // Rotate lines
-      lines.rotation.x += 0.0001;
-      lines.rotation.y += 0.0002;
+      // Rotate lines slightly slower
+      lines.rotation.x += 0.00005;
+      lines.rotation.y += 0.0001;
 
       // Slow floating animation
       const positions = particles.getAttribute("position").array as Float32Array;
@@ -135,7 +138,7 @@ export default function AnimatedBackground() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 w-full h-full -z-10"
+      className="animated-bg fixed inset-0 w-full h-full -z-10"
       style={{ background: "linear-gradient(135deg, #fafaf8 0%, #f0f9fc 100%)" }}
     />
   );

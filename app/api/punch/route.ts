@@ -1,12 +1,12 @@
 // app/api/punch/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { appendLogRow, getSettings, appendUnauthRow } from "@/lib/googleSheets";
+import { appendLogRow, getSettings, appendUnauthRow, findNearestLocation } from "@/lib/googleSheets";
 import { isWithinGeofence } from "@/lib/geo";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { workerId, name, action, lat, lng, accuracy } = body;
+    const { workerId, name, action, lat, lng, accuracy, type } = body;
 
     if (!workerId || !name || !action || lat == null || lng == null) {
       return NextResponse.json(
@@ -22,14 +22,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Determine nearest configured location (supports multiple factory points)
+    const nearest = await findNearestLocation(lat, lng);
+    // Debug log: show which LOCATION row matched (if any)
+    try {
+      console.log("[punch] nearest location:", nearest);
+    } catch (e) {
+      // ignore
+    }
     const settings = await getSettings();
-    const { within, distance } = isWithinGeofence(
+
+    // In case SETTINGS still provides a single factory fallback, use it to compute distance alongside nearest
+    const { within: withinSettings, distance: distanceToSettings } = isWithinGeofence(
       lat,
       lng,
       settings.factoryLat,
       settings.factoryLng,
       settings.geofenceRadiusM
     );
+
+    // Prefer the LOCATION lookup for within-check; if no locations exist, fall back to settings
+    const within = nearest.name ? nearest.within : withinSettings;
+    const distance = nearest.name ? nearest.distance : distanceToSettings;
 
     const now = new Date();
     const timestampIST = now.toLocaleString("en-GB", {
@@ -53,7 +67,9 @@ export async function POST(req: NextRequest) {
       lng,
       accuracy ?? distance,
       within,
-      userAgent
+      userAgent,
+      nearest.name || "",
+      type || "WORKER"
     );
 
     if (!within) {
@@ -68,7 +84,9 @@ export async function POST(req: NextRequest) {
           accuracy ?? distance,
           distance,
           "Location outside factory",
-          userAgent
+          userAgent,
+          nearest.name || "",
+          type || "WORKER"
         );
       } catch (e) {
         console.error("Failed to write UNAUTH row", e);

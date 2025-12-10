@@ -24,6 +24,22 @@ export default function Home() {
 
         {/* Role Selection Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {/* Employee Card */}
+          <Link href="/emp">
+            <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 sm:p-10 border border-white/20 hover:shadow-3xl transform hover:scale-105 transition-all duration-300 cursor-pointer group">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl mb-6 group-hover:scale-110 transition-transform">
+                <span className="text-4xl">👥</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4">Emp Login</h2>
+              <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                Employees (non-workers) can login with name + password.
+              </p>
+              <div className="flex items-center gap-2 text-amber-600 font-bold text-lg group-hover:translate-x-2 transition-transform">
+                <span>Login</span>
+                <span>→</span>
+              </div>
+            </div>
+          </Link>
           {/* Worker Card */}
           <Link href="/worker">
             <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl p-8 sm:p-10 border border-white/20 hover:shadow-3xl transform hover:scale-105 transition-all duration-300 cursor-pointer group">

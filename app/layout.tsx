@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AnimatedBackground from "./components/AnimatedBackground";
+import { Comfortaa } from "next/font/google";
+
+const comfortaa = Comfortaa({
+  subsets: ["latin"],
+  variable: "--font-comfortaa",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#fafaf8] via-white to-[#f0f9fc]`}
+        className={`${comfortaa.variable} ${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-[#fafaf8] via-white to-[#f0f9fc]`}
       >
         <AnimatedBackground />
         {children}
